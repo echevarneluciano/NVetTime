@@ -35,7 +35,7 @@ public class TareasController : Controller
     }
 
     [HttpGet("turnos/{tarea}/{fecha}/{empleado}")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> turnosPorTarea(string tarea, string fecha, string empleado)
     {
         try

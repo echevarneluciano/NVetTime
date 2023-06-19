@@ -9,7 +9,6 @@ namespace VetTime.Controllers;
 
 
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 public class ClientesMascotasController : Controller
 {
@@ -22,12 +21,13 @@ public class ClientesMascotasController : Controller
 
     // GET: api/<controller>
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> Get()
     {
         try
         {
-            return Ok(contexto.Clientes_Mascotas.Include(c => c.cliente).Include(c => c.mascota).ToList().Where(c => c.clienteId == 5));
+            var usuario = User.Identity.Name;
+            return Ok(contexto.Clientes_Mascotas.Include(c => c.cliente).Include(c => c.mascota).ToList().Where(c => c.cliente.authId == usuario));
         }
         catch (Exception ex)
         {

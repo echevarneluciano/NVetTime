@@ -9,7 +9,7 @@ public class Cliente
     public String? nombre { get; set; }
     public String? apellido { get; set; }
     public String? mail { get; set; }
-    public String? pass { get; set; }
+    public String? authId { get; set; }
     public String? telefono { get; set; }
     public String? direccion { get; set; }
     public int? activo { get; set; }
@@ -18,13 +18,13 @@ public class Cliente
     {
 
     }
-    public Cliente(int id, string? nombre, string? apellido, string? mail, string? pass, string? telefono, string? direccion, int? activo)
+    public Cliente(int id, string? nombre, string? apellido, string? mail, string? authId, string? telefono, string? direccion, int? activo)
     {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.mail = mail;
-        this.pass = pass;
+        this.authId = authId;
         this.telefono = telefono;
         this.direccion = direccion;
         this.activo = activo;

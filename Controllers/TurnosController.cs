@@ -26,6 +26,7 @@ public class TurnosController : Controller
     {
         try
         {
+            var usuario = User.Identity;
             return Ok(contexto.Turnos.Include(x => x.empleado).ToList());
         }
         catch (Exception ex)

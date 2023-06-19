@@ -9,7 +9,6 @@ namespace VetTime.Controllers;
 
 
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 public class EmpleadosTareasController : Controller
 {
@@ -22,7 +21,7 @@ public class EmpleadosTareasController : Controller
 
     // GET: api/<controller>
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> Get()
     {
         try

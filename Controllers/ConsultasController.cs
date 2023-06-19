@@ -9,7 +9,6 @@ namespace VetTime.Controllers;
 
 
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 public class ConsultasController : Controller
 {
@@ -22,7 +21,7 @@ public class ConsultasController : Controller
 
     // GET: api/<controller>
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> Get()
     {
         try
@@ -39,7 +38,7 @@ public class ConsultasController : Controller
     }
 
     [HttpPost("{empleado}")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> nuevaConsulta([FromBody] Consulta c, string empleado)
     {
         try
@@ -80,7 +79,7 @@ public class ConsultasController : Controller
     }
 
     [HttpGet("turnos/{fecha}/{empleado}")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> turnosOcupados(string fecha, string empleado)
     {
         try

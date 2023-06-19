@@ -2,13 +2,13 @@ using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NVetTime.Models;
 
 namespace VetTime.Controllers;
 
 
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 public class MascotasController : Controller
 {
@@ -21,12 +21,14 @@ public class MascotasController : Controller
 
     // GET: api/<controller>
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> Get()
     {
         try
         {
-            return Ok(contexto.Mascotas.ToList());
+            var usuario = User.Identity.Name;
+            var mascotas = await contexto.Clientes_Mascotas.Include(x => x.mascota).Include(x => x.cliente).Where(x => x.cliente.authId == usuario).ToListAsync();
+            return Ok(mascotas);
         }
         catch (Exception ex)
         {
@@ -35,25 +37,26 @@ public class MascotasController : Controller
     }
 
     [HttpPost("nueva")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> nuevaMascota([FromBody] Mascota mascota)
     {
         try
         {
-            var idCliente = 5;
+            var usuario = User.Identity.Name;
+            var cliente = await contexto.Clientes.FirstOrDefaultAsync(x => x.authId == usuario);
             var activo = 1;
             var resultado = contexto.Mascotas.Add(mascota);
             await contexto.SaveChangesAsync();
             if (resultado.Entity.id != 0)
             {
-                contexto.Clientes_Mascotas.Add(new Cliente_mascota { mascotaId = resultado.Entity.id, clienteId = idCliente, activo = activo });
+                contexto.Clientes_Mascotas.Add(new Cliente_mascota { mascotaId = resultado.Entity.id, clienteId = cliente.id, activo = activo });
                 await contexto.SaveChangesAsync();
             }
             else
             {
                 return BadRequest();
             }
-            return Ok();
+            return Ok(mascota);
         }
         catch (Exception ex)
         {
@@ -62,13 +65,15 @@ public class MascotasController : Controller
     }
 
     [HttpPost]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> Actualizar([FromBody] Mascota mascota)
     {
         try
         {
+            var usuario = User.Identity.Name;
             var mascotaEncontrada = contexto.Mascotas.FirstOrDefault(x => x.id == mascota.id);
-            if (mascotaEncontrada != null)
+            var esDelCliente = await contexto.Clientes_Mascotas.AnyAsync(x => x.mascotaId == mascota.id && x.cliente.authId == usuario);
+            if (mascotaEncontrada != null && esDelCliente)
             {
                 mascotaEncontrada.nombre = mascota.nombre;
                 mascotaEncontrada.apellido = mascota.apellido;

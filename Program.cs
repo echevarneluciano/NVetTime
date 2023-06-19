@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using NVetTime.Models;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -21,6 +22,10 @@ builder.Services.AddAuthentication(options =>
         {
             options.Authority = "https://dev-imbas1v3lp0rrnnp.us.auth0.com/";
             options.Audience = "http://localhost:5111/";
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                NameClaimType = ClaimTypes.NameIdentifier
+            };
         });
 
 builder.Services.AddDbContext<DataContext>(

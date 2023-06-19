@@ -8,7 +8,6 @@ namespace VetTime.Controllers;
 
 
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [ApiController]
 public class SucursalesController : Controller
 {

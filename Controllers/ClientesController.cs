@@ -70,15 +70,17 @@ public class ClientesController : Controller
             var clienteEncontrado = contexto.Clientes.FirstOrDefault(x => x.authId == cliente.authId);
             if (clienteEncontrado == null)
             {
-                clienteEncontrado.nombre = cliente.nombre;
-                clienteEncontrado.apellido = cliente.apellido;
-                clienteEncontrado.telefono = cliente.telefono;
-                clienteEncontrado.direccion = cliente.direccion;
-                clienteEncontrado.mail = cliente.mail;
-                clienteEncontrado.activo = cliente.activo;
-                clienteEncontrado.authId = cliente.authId;
-                contexto.Clientes.Update(clienteEncontrado);
+                Cliente nuevoCliente = new Cliente();
+                nuevoCliente.nombre = cliente.nombre;
+                nuevoCliente.apellido = cliente.apellido;
+                nuevoCliente.telefono = cliente.telefono;
+                nuevoCliente.direccion = cliente.direccion;
+                nuevoCliente.mail = cliente.mail;
+                nuevoCliente.activo = cliente.activo;
+                nuevoCliente.authId = cliente.authId;
+                contexto.Clientes.Update(nuevoCliente);
                 await contexto.SaveChangesAsync();
+                return Ok(nuevoCliente);
             }
             return Ok(clienteEncontrado);
         }

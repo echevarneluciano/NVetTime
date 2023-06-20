@@ -122,12 +122,13 @@ public class ConsultasController : Controller
     }
 
     [HttpGet("pendientes")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> GetPendientes()
     {
         try
         {
-            var pendientes = contexto.Consultas.Where(x => x.estado == 1).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).ToList();
+            var usuario = User.Identity.Name;
+            var pendientes = contexto.Consultas.Where(x => x.estado == 1).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).ToList();
             return Ok(pendientes);
         }
         catch (Exception ex)
@@ -137,12 +138,13 @@ public class ConsultasController : Controller
     }
 
     [HttpGet("historial")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> GetHistorial()
     {
         try
         {
-            var pendientes = contexto.Consultas.Where(x => x.estado == 0).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Take(10).ToList();
+            var usuario = User.Identity.Name;
+            var pendientes = contexto.Consultas.Where(x => x.estado == 0).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).Take(10).ToList();
             return Ok(pendientes);
         }
         catch (Exception ex)

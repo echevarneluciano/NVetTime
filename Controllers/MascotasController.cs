@@ -89,4 +89,32 @@ public class MascotasController : Controller
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPost("imgupload")]
+    [Authorize]
+    public async Task<IActionResult> imgUpload([FromForm] String name, [FromForm] String image, [FromForm] Int16 id)
+    {
+        try
+        {
+            string imagePath = Path.Combine("wwwroot/images", name + ".jpg");
+            string imagePath2 = Path.Combine("/images", name + ".jpg");
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await fileStream.WriteAsync(Convert.FromBase64String(image));
+            }
+            Mascota mascota = contexto.Mascotas.FirstOrDefault(x => x.id == id);
+            if (mascota != null)
+            {
+                mascota.foto = imagePath2;
+                contexto.Mascotas.Update(mascota);
+                await contexto.SaveChangesAsync();
+            }
+            return Ok(mascota);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 }

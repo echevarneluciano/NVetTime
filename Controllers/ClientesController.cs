@@ -90,4 +90,31 @@ public class ClientesController : Controller
         }
     }
 
+    [HttpPost("imgupload")]
+    [Authorize]
+    public async Task<IActionResult> imgUpload([FromForm] String name, [FromForm] String image)
+    {
+        try
+        {
+            string imagePath = Path.Combine("wwwroot/images", name + ".jpg");
+            string imagePath2 = Path.Combine("/images", name + ".jpg");
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await fileStream.WriteAsync(Convert.FromBase64String(image));
+            }
+            Cliente cliente = contexto.Clientes.FirstOrDefault(x => x.authId == User.Identity.Name);
+            if (cliente != null)
+            {
+                cliente.foto = imagePath2;
+                contexto.Clientes.Update(cliente);
+                await contexto.SaveChangesAsync();
+            }
+            return Ok(cliente);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 }

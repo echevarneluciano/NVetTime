@@ -12,13 +12,14 @@ public class Cliente
     public String? authId { get; set; }
     public String? telefono { get; set; }
     public String? direccion { get; set; }
+    public String? foto { get; set; }
     public int? activo { get; set; }
 
     public Cliente()
     {
 
     }
-    public Cliente(int id, string? nombre, string? apellido, string? mail, string? authId, string? telefono, string? direccion, int? activo)
+    public Cliente(int id, string? nombre, string? apellido, string? mail, string? authId, string? telefono, string? direccion, int? activo, string? foto)
     {
         this.id = id;
         this.nombre = nombre;
@@ -28,5 +29,6 @@ public class Cliente
         this.telefono = telefono;
         this.direccion = direccion;
         this.activo = activo;
+        this.foto = foto;
     }
 }

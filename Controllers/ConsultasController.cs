@@ -153,4 +153,31 @@ public class ConsultasController : Controller
         }
     }
 
+    [HttpPost("imgupload")]
+    [Authorize]
+    public async Task<IActionResult> imgUpload([FromForm] String name, [FromForm] String image, [FromForm] Int16 id)
+    {
+        try
+        {
+            string imagePath = Path.Combine("wwwroot/images", name + ".jpg");
+            string imagePath2 = Path.Combine("/images", name + ".jpg");
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await fileStream.WriteAsync(Convert.FromBase64String(image));
+            }
+            Consulta consulta = contexto.Consultas.FirstOrDefault(x => x.id == id);
+            if (consulta != null)
+            {
+                consulta.foto = imagePath2;
+                contexto.Consultas.Update(consulta);
+                await contexto.SaveChangesAsync();
+            }
+            return Ok(consulta);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 }

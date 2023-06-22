@@ -16,6 +16,7 @@ public class Consulta
     [ForeignKey(nameof(cliente_mascotaId))]
     public int? cliente_mascotaId { get; set; }
     public String? detalle { get; set; }
+    public String? foto { get; set; }
     public int? activo { get; set; }
     public Empleado? empleado { get; set; }
     public Cliente_mascota? cliente_mascota { get; set; }
@@ -24,7 +25,7 @@ public class Consulta
     {
 
     }
-    public Consulta(int id, int? estado, DateTime? tiempoInicio, DateTime? tiempoFin, int? empleadoId, int? cliente_mascotaId, String? detalle, int? activo, Empleado? empleado, Cliente_mascota? cliente_mascota)
+    public Consulta(int id, int? estado, DateTime? tiempoInicio, DateTime? tiempoFin, int? empleadoId, int? cliente_mascotaId, String? detalle, int? activo, Empleado? empleado, Cliente_mascota? cliente_mascota, String? foto)
     {
         this.id = id;
         this.estado = estado;
@@ -36,5 +37,6 @@ public class Consulta
         this.activo = activo;
         this.empleado = empleado;
         this.cliente_mascota = cliente_mascota;
+        this.foto = foto;
     }
 }

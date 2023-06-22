@@ -27,7 +27,7 @@ public class MascotasController : Controller
         try
         {
             var usuario = User.Identity.Name;
-            var mascotas = await contexto.Clientes_Mascotas.Include(x => x.mascota).Include(x => x.cliente).Where(x => x.cliente.authId == usuario).ToListAsync();
+            var mascotas = await contexto.Clientes_Mascotas.Include(x => x.mascota).Include(x => x.cliente).Where(x => x.cliente.authId == usuario && x.activo == 1).ToListAsync();
             return Ok(mascotas);
         }
         catch (Exception ex)
@@ -109,6 +109,29 @@ public class MascotasController : Controller
                 contexto.Mascotas.Update(mascota);
                 await contexto.SaveChangesAsync();
             }
+            return Ok(mascota);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("eliminar")]
+    [Authorize]
+    public async Task<IActionResult> eliminarMascota([FromBody] Mascota mascota)
+    {
+        try
+        {
+            var usuario = User.Identity.Name;
+            var mascotas = await contexto.Clientes_Mascotas.Include(x => x.mascota).Include(x => x.cliente).Where(x => x.cliente.authId == usuario && x.activo == 1).FirstOrDefaultAsync(x => x.mascotaId == mascota.id);
+            if (mascotas != null)
+            {
+                mascotas.activo = 0;
+                contexto.Clientes_Mascotas.Update(mascotas);
+                await contexto.SaveChangesAsync();
+            }
+
             return Ok(mascota);
         }
         catch (Exception ex)

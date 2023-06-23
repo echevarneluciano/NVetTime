@@ -143,7 +143,7 @@ public class MascotasController : Controller
         }
     }
 
-    [HttpGet("uid/{uid}")]
+    [HttpGet("ComprobarUid/{uid}")]
     [Authorize]
     public async Task<IActionResult> compruebaUid(String uid)
     {
@@ -152,6 +152,30 @@ public class MascotasController : Controller
             var usuario = User.Identity.Name;
             var mascota = await contexto.Mascotas.FirstOrDefaultAsync(x => x.uid == uid);
             return Ok(mascota);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("AgregarCompartida")]
+    [Authorize]
+    public async Task<IActionResult> agregarCompartida([FromBody] Mascota mascota)
+    {
+        try
+        {
+            var usuarioIdentity = User.Identity.Name;
+            var usuario = await contexto.Clientes.FirstOrDefaultAsync(x => x.authId == usuarioIdentity);
+            var mascotaCompartida = contexto.Clientes_Mascotas.FirstOrDefault(x => x.mascotaId == mascota.id);
+            if (mascotaCompartida != null)
+            {
+                var mascotaAgregar = new Cliente_mascota { mascotaId = mascota.id, clienteId = usuario.id, activo = 1 };
+                contexto.Clientes_Mascotas.Add(mascotaAgregar);
+                await contexto.SaveChangesAsync();
+                return Ok(mascota);
+            }
+            return BadRequest();
         }
         catch (Exception ex)
         {

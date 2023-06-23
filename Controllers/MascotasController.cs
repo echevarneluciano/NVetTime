@@ -43,8 +43,11 @@ public class MascotasController : Controller
         try
         {
             var usuario = User.Identity.Name;
+            var uid = Guid.NewGuid();
+            var tomo6 = uid.ToString().Substring(0, 6);
             var cliente = await contexto.Clientes.FirstOrDefaultAsync(x => x.authId == usuario);
             var activo = 1;
+            mascota.uid = tomo6;
             var resultado = contexto.Mascotas.Add(mascota);
             await contexto.SaveChangesAsync();
             if (resultado.Entity.id != 0)
@@ -132,6 +135,22 @@ public class MascotasController : Controller
                 await contexto.SaveChangesAsync();
             }
 
+            return Ok(mascota);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("uid/{uid}")]
+    [Authorize]
+    public async Task<IActionResult> compruebaUid(String uid)
+    {
+        try
+        {
+            var usuario = User.Identity.Name;
+            var mascota = await contexto.Mascotas.FirstOrDefaultAsync(x => x.uid == uid);
             return Ok(mascota);
         }
         catch (Exception ex)

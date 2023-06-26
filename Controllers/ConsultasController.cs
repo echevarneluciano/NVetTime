@@ -50,16 +50,15 @@ public class ConsultasController : Controller
             var inicioC = inicio.ToString("yyyy/MM/dd HH:mm:ss");
             DateTime fin = (DateTime)c.tiempoFin;
             var finC = fin.ToString("yyyy/MM/dd HH:mm:ss");
-
             Consulta item = new Consulta();
+
             using (var command = contexto.Database.GetDbConnection().CreateCommand())
             {
-                command.CommandText = @$"INSERT INTO consultas 
-                (empleadoid, tiempoinicio, tiempofin, cliente_mascotaid, estado, detalle)
-                SELECT e.id, '{inicioC}', '{finC}', {c.cliente_mascotaId}, 1, '{c.detalle}'
-                FROM empleados e
-                WHERE e.nombre = '{nombre}' AND e.apellido = '{apellido}';
-                SELECT LAST_INSERT_ID();";
+                command.CommandText = @$"SELECT * FROM consultas
+            WHERE ('{inicioC}' > consultas.tiempoinicio AND '{inicioC}' < consultas.tiempofin)
+            OR ('{finC}' > consultas.tiempoinicio AND '{finC}' < consultas.tiempofin)
+            OR ('{inicioC}' <= consultas.tiempoinicio AND '{finC}' >= consultas.tiempofin)
+            AND consultas.empleadoid = {c.empleadoId};";
                 contexto.Database.OpenConnection();
                 using (var result = command.ExecuteReader())
                 {
@@ -69,8 +68,32 @@ public class ConsultasController : Controller
                     }
                 }
             }
-            var consultaCreada = contexto.Consultas.Find(item.id);
-            return Ok(consultaCreada);
+            if (item.id == 0)
+            {
+                using (var command = contexto.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = @$"INSERT INTO consultas 
+                (empleadoid, tiempoinicio, tiempofin, cliente_mascotaid, estado, detalle)
+                SELECT e.id, '{inicioC}', '{finC}', {c.cliente_mascotaId}, 1, '{c.detalle}'
+                FROM empleados e
+                WHERE e.nombre = '{nombre}' AND e.apellido = '{apellido}';
+                SELECT LAST_INSERT_ID();";
+                    contexto.Database.OpenConnection();
+                    using (var result = command.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            item.id = result.GetInt32(0);
+                        }
+                    }
+                }
+                var consultaCreada = contexto.Consultas.Find(item.id);
+                return Ok(consultaCreada);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
         catch (Exception ex)
         {

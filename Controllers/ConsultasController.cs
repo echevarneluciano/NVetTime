@@ -144,22 +144,6 @@ public class ConsultasController : Controller
         }
     }
 
-    /*   [HttpGet("pendientes")]
-      [Authorize]
-      public async Task<IActionResult> GetPendientes()
-      {
-          try
-          {
-              var usuario = User.Identity.Name;
-              var pendientes = contexto.Consultas.Where(x => x.estado == 1).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).ToList();
-              return Ok(pendientes);
-          }
-          catch (Exception ex)
-          {
-              return BadRequest(ex.Message);
-          }
-      } */
-
     [HttpGet("pendientes")]
     [Authorize]
     public async Task<IActionResult> getPendientes()

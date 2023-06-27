@@ -78,6 +78,7 @@ public class ClientesController : Controller
                 nuevoCliente.mail = cliente.mail;
                 nuevoCliente.activo = cliente.activo;
                 nuevoCliente.authId = cliente.authId;
+                nuevoCliente.foto = "/images/Figura_defecto.png";
                 contexto.Clientes.Update(nuevoCliente);
                 await contexto.SaveChangesAsync();
                 return Ok(nuevoCliente);

@@ -48,6 +48,7 @@ public class MascotasController : Controller
             var cliente = await contexto.Clientes.FirstOrDefaultAsync(x => x.authId == usuario);
             var activo = 1;
             mascota.uid = tomo6;
+            mascota.foto = "/images/Figura_defecto.png";
             var resultado = contexto.Mascotas.Add(mascota);
             await contexto.SaveChangesAsync();
             if (resultado.Entity.id != 0)

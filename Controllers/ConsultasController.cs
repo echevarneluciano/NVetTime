@@ -144,14 +144,45 @@ public class ConsultasController : Controller
         }
     }
 
+    /*   [HttpGet("pendientes")]
+      [Authorize]
+      public async Task<IActionResult> GetPendientes()
+      {
+          try
+          {
+              var usuario = User.Identity.Name;
+              var pendientes = contexto.Consultas.Where(x => x.estado == 1).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).ToList();
+              return Ok(pendientes);
+          }
+          catch (Exception ex)
+          {
+              return BadRequest(ex.Message);
+          }
+      } */
+
     [HttpGet("pendientes")]
     [Authorize]
-    public async Task<IActionResult> GetPendientes()
+    public async Task<IActionResult> getPendientes()
     {
         try
         {
             var usuario = User.Identity.Name;
-            var pendientes = contexto.Consultas.Where(x => x.estado == 1).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).ToList();
+
+            var mascotasDeUsuario = contexto.Clientes_Mascotas.Include(x => x.mascota)
+            .Where(x => x.cliente.authId == usuario)
+            .Select(x => x.mascota)
+            .ToList();
+
+            var mascotaCliente = contexto.Clientes_Mascotas.Include(x => x.mascota)
+            .Where(x => mascotasDeUsuario.Contains(x.mascota))
+            .ToList();
+
+            var pendientes = contexto.Consultas.Where(x => x.estado == 1)
+            .Include(x => x.cliente_mascota)
+            .Include(x => x.empleado)
+            .Where(x => mascotaCliente.Contains(x.cliente_mascota))
+            .ToList();
+
             return Ok(pendientes);
         }
         catch (Exception ex)
@@ -167,7 +198,22 @@ public class ConsultasController : Controller
         try
         {
             var usuario = User.Identity.Name;
-            var pendientes = contexto.Consultas.Where(x => x.estado == 0).Include(x => x.cliente_mascota).ThenInclude(x => x.mascota).Include(x => x.empleado).Where(x => x.cliente_mascota.cliente.authId == usuario).Take(10).ToList();
+
+            var mascotasDeUsuario = contexto.Clientes_Mascotas.Include(x => x.mascota)
+            .Where(x => x.cliente.authId == usuario)
+            .Select(x => x.mascota)
+            .ToList();
+
+            var mascotaCliente = contexto.Clientes_Mascotas.Include(x => x.mascota)
+            .Where(x => mascotasDeUsuario.Contains(x.mascota))
+            .ToList();
+
+            var pendientes = contexto.Consultas.Where(x => x.estado == 0)
+            .Include(x => x.cliente_mascota)
+            .Include(x => x.empleado)
+            .Where(x => mascotaCliente.Contains(x.cliente_mascota))
+            .ToList();
+
             return Ok(pendientes);
         }
         catch (Exception ex)
